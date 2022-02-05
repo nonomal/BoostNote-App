@@ -1,5 +1,10 @@
 import { lngKeys } from '../../lib/i18n/types'
-import { mdiDotsVertical, mdiPencilOutline, mdiTrashCanOutline } from '@mdi/js'
+import {
+  mdiContentDuplicate,
+  mdiDotsVertical,
+  mdiPencilOutline,
+  mdiTrashCanOutline,
+} from '@mdi/js'
 import React, { useCallback, useState } from 'react'
 import { SerializedDocWithSupplemental } from '../../interfaces/db/doc'
 import { useCloudApi } from '../../lib/hooks/useCloudApi'
@@ -12,20 +17,22 @@ import {
 import Icon from '../../../design/components/atoms/Icon'
 import styled from '../../../design/lib/styled'
 import EditableInput from '../../../design/components/atoms/EditableInput'
+import { SerializedTeam } from '../../interfaces/db/team'
+import { prepareDocPropsForAPI } from '../../lib/props'
 
 interface ItemProps {
   doc: SerializedDocWithSupplemental
-  teamId?: string
+  team: SerializedTeam
   children?: React.ReactNode
 }
 
-const EditableItemContainer = ({ doc, teamId, children }: ItemProps) => {
+const EditableItemContainer = ({ team, doc, children }: ItemProps) => {
   const [editingItemTitle, setEditingItemTitle] = useState<boolean>(false)
   const [showingContextMenuActions, setShowingContextMenuActions] = useState<
     boolean
   >(false)
 
-  const { updateDoc, deleteDocApi } = useCloudApi()
+  const { createDoc, updateDoc, deleteDocApi } = useCloudApi()
   const { translate } = useI18n()
   const { popup } = useContextMenu()
 
@@ -41,16 +48,37 @@ const EditableItemContainer = ({ doc, teamId, children }: ItemProps) => {
   )
 
   const onDocRemove = useCallback(
-    (doc) => {
-      if (teamId == null) {
-        if (doc.teamId != null && doc.teamId != '') {
-          deleteDocApi({ id: doc.id, teamId: doc.teamId })
-        }
+    async (doc) => {
+      if (team == null) {
         return
       }
-      deleteDocApi({ id: doc.id, teamId: teamId })
+      await deleteDocApi({ id: doc.id, teamId: team.id })
     },
-    [deleteDocApi, teamId]
+    [deleteDocApi, team]
+  )
+
+  const onDocDuplicate = useCallback(
+    async (doc) => {
+      if (team == null) {
+        return
+      }
+      const newProps = prepareDocPropsForAPI(doc.props)
+      await createDoc(
+        team,
+        {
+          workspaceId: doc.workspaceId,
+          parentFolderId: doc.parentFolderId,
+          emoji: doc.emoji,
+          title: doc.title,
+          content: doc.head ? doc.head.content : '',
+          props: newProps,
+        },
+        {
+          skipRedirect: true,
+        }
+      )
+    },
+    [createDoc, team]
   )
 
   const openActionMenu: (
@@ -67,19 +95,29 @@ const EditableItemContainer = ({ doc, teamId, children }: ItemProps) => {
         label: translate(lngKeys.GeneralEditTitle),
         onClick: () => setEditingItemTitle(true),
       }
+      const duplicateAction: MenuItem = {
+        icon: <Icon path={mdiContentDuplicate} />,
+        type: MenuTypes.Normal,
+        label: translate(lngKeys.GeneralDuplicate),
+        onClick: () => onDocDuplicate(doc),
+      }
       const deleteDocAction: MenuItem = {
         icon: <Icon path={mdiTrashCanOutline} />,
         type: MenuTypes.Normal,
         label: translate(lngKeys.GeneralDelete),
         onClick: () => onDocRemove(doc),
       }
-      const actions: MenuItem[] = [editTitleAction, deleteDocAction]
+      const actions: MenuItem[] = [
+        editTitleAction,
+        duplicateAction,
+        deleteDocAction,
+      ]
 
       event.preventDefault()
       event.stopPropagation()
       popup(event, actions)
     },
-    [onDocRemove, popup, translate]
+    [onDocDuplicate, onDocRemove, popup, translate]
   )
 
   return (

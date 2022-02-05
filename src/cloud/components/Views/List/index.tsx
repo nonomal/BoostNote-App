@@ -230,7 +230,7 @@ const ListView = ({
           const { id } = doc
           const href = getDocLinkHref(doc, team, 'index')
           return (
-            <EditableItemContainer key={id} doc={doc} teamId={team.id}>
+            <EditableItemContainer key={id} doc={doc} team={team}>
               <ListViewItem
                 id={id}
                 checked={hasDocInSelection(doc.id)}

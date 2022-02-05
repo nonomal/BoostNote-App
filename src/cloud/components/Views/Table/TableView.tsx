@@ -270,7 +270,7 @@ const TableView = ({
               cells: [
                 {
                   children: (
-                    <EditableItemContainer doc={doc} teamId={team.id}>
+                    <EditableItemContainer doc={doc} team={team}>
                       <NavigationItem
                         labelHref={docLink}
                         labelClick={() => goToDocPreview(doc)}

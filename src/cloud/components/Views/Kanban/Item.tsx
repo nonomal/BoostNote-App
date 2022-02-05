@@ -11,16 +11,18 @@ import { getDocTitle } from '../../../lib/utils/patterns'
 import { isKanbanStaticProp, KanbanViewProp } from '../../../lib/views/kanban'
 import PropPicker from '../../Props/PropPicker'
 import EditableItemContainer from '../EditableItemContainer'
+import { SerializedTeam } from '../../../interfaces/db/team'
 
 interface ItemProps {
+  team: SerializedTeam
   doc: SerializedDocWithSupplemental
   onClick?: (doc: SerializedDocWithSupplemental) => void
   displayedProps: Record<string, KanbanViewProp>
 }
 
-const Item = ({ doc, displayedProps, onClick }: ItemProps) => {
+const Item = ({ team, doc, displayedProps, onClick }: ItemProps) => {
   return (
-    <EditableItemContainer doc={doc}>
+    <EditableItemContainer team={team} doc={doc}>
       <Container
         labelClick={() => onClick && onClick(doc)}
         label={
