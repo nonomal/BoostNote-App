@@ -2,6 +2,7 @@ import {
   mdiAccountOutline,
   mdiArrowDownDropCircleOutline,
   mdiCalendarMonthOutline,
+  mdiCheckBoxOutline,
   mdiClockOutline,
   mdiContentSaveOutline,
   mdiFormatText,
@@ -37,6 +38,7 @@ export const supportedPropTypes: {
   { type: 'user' },
   { type: 'number' },
   { type: 'string' },
+  { type: 'checkbox' },
 ]
 
 export function getLabelOfPropType(
@@ -93,7 +95,7 @@ export const ConditionNameSuggestionsPerTypeOrSubType: Record<
   timeperiod: ['Time Estimate', 'Time Tracked'],
   date: ['Due Date', 'Start Date'],
   status: ['Status'],
-  number: ['Number'],
+  number: ['Number', 'Checkbox'],
 }
 
 export function getIconPathOfPropType(
@@ -114,6 +116,8 @@ export function getIconPathOfPropType(
       return mdiLabelOutline
     case 'status':
       return mdiArrowDownDropCircleOutline
+    case 'checkbox':
+      return mdiCheckBoxOutline
     case 'number':
       return mdiMusicAccidentalSharp
     case 'string':
@@ -146,6 +150,12 @@ export function getInitialPropDataOfPropType(
     case 'number':
       return {
         type: 'number',
+        data: undefined,
+        createdAt: new Date().toString(),
+      }
+    case 'checkbox':
+      return {
+        type: 'checkbox',
         data: undefined,
         createdAt: new Date().toString(),
       }
@@ -219,5 +229,6 @@ export function getDefaultColumnSuggestionsPerType(): {
     { type: 'date', name: 'Start Date' },
     { type: 'number', name: 'Story Point' },
     { type: 'string', name: 'Text' },
+    { type: 'checkbox', name: 'Checkbox' },
   ]
 }

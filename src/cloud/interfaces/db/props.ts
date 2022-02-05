@@ -23,6 +23,7 @@ export type SerializedPropData =
   | Prop<'date', NullablePropData<Date>>
   | Prop<'json', any>
   | Prop<'number', NullablePropData<number>>
+  | Prop<'checkbox', NullablePropData<boolean>>
   | Prop<'user', NullablePropData<SerializedUserTeamPermissions>>
   | Prop<'status', NullablePropData<SerializedStatus>>
 

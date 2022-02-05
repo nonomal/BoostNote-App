@@ -14,6 +14,8 @@ import { MixpanelActionTrackTypes } from '../../interfaces/analytics/mixpanel'
 import NumberSelect from './Pickers/NumberSelect'
 import TextSelect from './Pickers/TextSelect'
 import { getISODateFromLocalTime } from '../../lib/date'
+import CheckboxSelect from './Pickers/CheckboxSelect'
+import { IconSize } from '../../../design/components/atoms/Icon'
 
 interface PropPickerProps {
   parent: { type: 'doc'; target: SerializedDocWithSupplemental }
@@ -22,6 +24,8 @@ interface PropPickerProps {
   readOnly?: boolean
   isErrored?: boolean
   showIcon?: boolean
+  iconSize?: IconSize
+  showPropName?: boolean
   emptyLabel?: string
   onUpdate?: (newProps: Props) => void
 }
@@ -35,6 +39,8 @@ const PropPicker = ({
   isErrored,
   showIcon,
   emptyLabel,
+  showPropName = false,
+  iconSize = 20,
 }: PropPickerProps) => {
   const { sendingMap, updateDocPropsApi } = useCloudApi()
 
@@ -73,8 +79,39 @@ const PropPicker = ({
       </WithTooltip>
     )
   }
-
   switch (propData.type) {
+    case 'checkbox':
+      return showPropName ? (
+        <WithTooltip tooltip={propName}>
+          <CheckboxSelect
+            value={propData.data != null && propData.data == true}
+            iconSize={iconSize}
+            isReadOnly={readOnly}
+            onCheckboxToggle={() =>
+              updateProp({
+                type: 'checkbox',
+                data: propData.data == true ? 0 : 1,
+              })
+            }
+            showIcon={showIcon}
+            disabled={sendingMap.get(parent.target.id) != null || readOnly}
+          />
+        </WithTooltip>
+      ) : (
+        <CheckboxSelect
+          value={propData.data != null && propData.data == true}
+          iconSize={iconSize}
+          isReadOnly={readOnly}
+          onCheckboxToggle={() =>
+            updateProp({
+              type: 'checkbox',
+              data: propData.data == true ? 0 : 1,
+            })
+          }
+          showIcon={showIcon}
+          disabled={sendingMap.get(parent.target.id) != null || readOnly}
+        />
+      )
     case 'user':
       return (
         <AssigneeSelect
