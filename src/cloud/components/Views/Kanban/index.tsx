@@ -52,6 +52,7 @@ const KanbanView = ({
 }: KanbanViewProps) => {
   const {
     state: { statuses },
+    editStatus,
   } = useStatuses(team.id)
   const {
     prop,
@@ -121,6 +122,8 @@ const KanbanView = ({
               openContextModal(
                 event,
                 <ListSettings
+                  status={status}
+                  onStatusUpdate={(status) => editStatus(status)}
                   list={list}
                   remove={(list) => {
                     removeListRef.current(list)
@@ -144,7 +147,7 @@ const KanbanView = ({
         </Flexbox>
       )
     },
-    [statuses, openContextModal, closeLastModal]
+    [statuses, openContextModal, editStatus, closeLastModal]
   )
 
   const renderItem = useCallback(
